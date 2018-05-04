@@ -2,14 +2,14 @@ import { initializeApp } from "firebase";
 
 import { CssBaseline } from "material-ui";
 import * as React from "react";
-import { Provider } from "react-redux";
+import { connect } from "react-redux";
 import { AppBar } from "./AppBar";
 import { initAuth } from "./auth";
-import { store } from "./redux/store";
 
 import "typeface-roboto";
 import "./App.css";
-import { getVotes, vote } from "./vote";
+import { IUser } from "./types/user";
+import { createUserDoc, loadUser } from "./vote";
 
 const config = {
   apiKey: "AIzaSyCMhMuwptpOPIeyHVG7CR-q-gfqzJJ3Lxs",
@@ -28,38 +28,35 @@ interface IState {
   votes: any[];
 }
 
-class App extends React.Component<{}, IState> {
+interface IProps {
+  user: IUser;
+}
+class AppImpl extends React.Component<IProps, IState> {
 
   public state = {
     votes: []
   }
 
-  public componentDidMount() {
-    getVotes().then(res => {
-      const votes: any[] = [];
-      res.forEach((doc) => votes.push(doc.data()))
-      this.setState({
-        votes
-      });
-    })
-  }
+
   public render() {
     return (
-      <Provider store={store}>
+
         <>
           <CssBaseline />
           <AppBar />
           <div>Home sweet home</div>
-          <button onClick={vote}>Vote</button>
+          <button onClick={createUserDoc(this.props.user)}>createUserDoc</button>
+          <button onClick={loadUser(this.props.user)}>loadUser</button>
           <div>
             {
               this.state.votes.map(dies => JSON.stringify(dies))
             }
           </div>
         </>
-      </Provider>
     );
   }
 }
 
-export default App;
+const mapStateToProps = ({ user }: { user: IUser }) => ({ user });
+
+export default connect(mapStateToProps)(AppImpl)
