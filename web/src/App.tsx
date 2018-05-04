@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase";
+
 import { CssBaseline } from "material-ui";
 import * as React from "react";
 import { Provider } from "react-redux";
@@ -8,6 +9,7 @@ import { store } from "./redux/store";
 
 import "typeface-roboto";
 import "./App.css";
+import { getVotes, vote } from "./vote";
 
 const config = {
   apiKey: "AIzaSyCMhMuwptpOPIeyHVG7CR-q-gfqzJJ3Lxs",
@@ -17,11 +19,30 @@ const config = {
   projectId: "fir-playground-e513c",
   storageBucket: "fir-playground-e513c.appspot.com"
 };
-initializeApp(config);
+export const firebaseApp = initializeApp(config);
 
 initAuth();
 
-class App extends React.Component {
+
+interface IState {
+  votes: any[];
+}
+
+class App extends React.Component<{}, IState> {
+
+  public state = {
+    votes: []
+  }
+
+  public componentDidMount() {
+    getVotes().then(res => {
+      const votes: any[] = [];
+      res.forEach((doc) => votes.push(doc.data()))
+      this.setState({
+        votes
+      });
+    })
+  }
   public render() {
     return (
       <Provider store={store}>
@@ -29,6 +50,12 @@ class App extends React.Component {
           <CssBaseline />
           <AppBar />
           <div>Home sweet home</div>
+          <button onClick={vote}>Vote</button>
+          <div>
+            {
+              this.state.votes.map(dies => JSON.stringify(dies))
+            }
+          </div>
         </>
       </Provider>
     );

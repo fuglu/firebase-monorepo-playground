@@ -8,6 +8,7 @@ export const initAuth = () => {
 };
 
 export const login = () => {
+  // const provider = new auth.FacebookAuthProvider();
   const provider = new auth.GoogleAuthProvider();
 
   auth().signInWithRedirect(provider);
